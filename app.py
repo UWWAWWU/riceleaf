@@ -190,7 +190,15 @@ def infer(image, classifier, segmenter):
     ).astype(np.uint8)
 
     gray = cv2.cvtColor(original, cv2.COLOR_RGB2GRAY)
-    canny = cv2.Canny(cv2.GaussianBlur(gray, (5, 5), 0), 50, 150)
+    all_edges = cv2.Canny(cv2.GaussianBlur(gray, (5, 5), 0), 50, 150)
+
+    # Tampilkan tepi hanya di sekitar area penyakit hasil segmentasi. Sedikit
+    # dilatasi mempertahankan tepi lesi yang berada tepat di batas mask.
+    disease_region = cv2.dilate(
+        mask.astype(np.uint8), np.ones((5, 5), dtype=np.uint8), iterations=1
+    ).astype(bool)
+    canny = np.zeros_like(all_edges)
+    canny[disease_region] = all_edges[disease_region]
     return prediction, confidence, probabilities, gradcam, mask, overlay, canny
 
 
@@ -208,10 +216,7 @@ with right:
     metric_a, metric_b = st.columns(2)
     metric_a.metric("Kelas penyakit", len(CLASSES))
     metric_b.metric("Ukuran input", f"{IMAGE_SIZE} × {IMAGE_SIZE}")
-    st.caption(
-        "Kelas: Bacterial Blight, Blast, Brown Spot, dan Tungro. "
-        "Versi ini belum mengenali daun normal atau gambar bukan tanaman padi."
-    )
+    st.caption("Kelas: Bacterial Blight, Blast, Brown Spot, dan Tungro.")
 
 if uploaded is None:
     st.info("Unggah satu foto tanaman padi untuk memulai prediksi.")
@@ -236,19 +241,6 @@ result_a.metric("Prediksi", LABELS[prediction])
 result_b.metric("Skor model", f"{confidence:.2%}")
 result_c.metric("Cakupan area prediksi", f"{mask.mean():.2%}")
 
-if confidence < CONFIDENCE_THRESHOLD:
-    st.warning(
-        "Model kurang yakin terhadap hasil ini. Gunakan foto daun padi yang jelas dan "
-        "lakukan pemeriksaan lanjutan."
-    )
-else:
-    st.success("Prediksi memenuhi ambang keyakinan model.")
-
-st.warning(
-    "Model saat ini hanya dilatih pada empat penyakit. Gambar daun normal atau bukan "
-    "tanaman padi tetap dapat diprediksi sebagai salah satu penyakit. Hasil bukan diagnosis pasti."
-)
-
 table = pd.DataFrame({"Kelas": LABELS, "Skor": probabilities})
 table = table.sort_values("Skor", ascending=False).reset_index(drop=True)
 table["Skor"] = table["Skor"].map(lambda value: f"{value:.2%}")
@@ -267,9 +259,10 @@ with tab3:
 with tab4:
     st.image(overlay, caption="Area prediksi penyakit ditandai merah", use_container_width=True)
 with tab5:
-    st.image(canny, caption="Semua tepi pada gambar; bukan khusus area penyakit", use_container_width=True)
+    st.image(
+        canny,
+        caption="Tepi yang berada di dalam area penyakit hasil segmentasi",
+        use_container_width=True,
+    )
 
-st.caption(
-    "RiceLeaf AI • Model identifikasi dan segmentasi citra tanaman padi • "
-    "Gunakan hasil sebagai bantuan analisis, bukan pengganti pemeriksaan ahli."
-)
+st.caption("RiceLeaf AI • Model identifikasi dan segmentasi citra tanaman padi")
