@@ -1,0 +1,77 @@
+{
+  "architecture": "densenet121",
+  "classes": [
+    "bacterial_blight",
+    "blast",
+    "brown_spot",
+    "tungro"
+  ],
+  "labels": [
+    "Bacterial Blight",
+    "Blast",
+    "Brown Spot",
+    "Tungro"
+  ],
+  "image_size": 320,
+  "mean": [
+    0.485,
+    0.456,
+    0.406
+  ],
+  "std": [
+    0.229,
+    0.224,
+    0.225
+  ],
+  "resize": "letterbox_bilinear",
+  "padding_rgb": [
+    124,
+    116,
+    104
+  ],
+  "temperature": 1.0,
+  "confidence_threshold": 0.845973154362416,
+  "segmentation": "UnetPlusPlus/resnet34",
+  "segmentation_threshold": 0.39999999999999997,
+  "segmentation_normalization": "imagenet",
+  "unknown_detector": false,
+  "healthy_class": false,
+  "torch": "2.11.0+cu128",
+  "torchvision": "0.26.0+cu128",
+  "smp": "0.5.0",
+  "sources": [
+    "https://doi.org/10.17632/fwcj7stb8r.2",
+    "https://doi.org/10.17632/92jc6w6mcy.1"
+  ],
+  "license": "Dataset CC BY 4.0; preserve attribution. Check pretrained-weight terms.",
+  "test_summary": {
+    "accuracy": 1.0,
+    "macro_f1": 1.0,
+    "coverage": 1.0,
+    "accuracy_accepted": 1.0
+  },
+  "config": {
+    "classes": [
+      "bacterial_blight",
+      "blast",
+      "brown_spot",
+      "tungro"
+    ],
+    "candidates": [
+      "densenet121",
+      "convnext_tiny",
+      "efficientnet_v2_s"
+    ],
+    "image_size": 320,
+    "batch_size": 8,
+    "accumulation": 2,
+    "epochs": 30,
+    "patience": 7,
+    "seg_epochs": 30,
+    "seed": 42,
+    "phash_distance": 4,
+    "mask_white": true,
+    "train_segmentation": true,
+    "pipeline_version": 1
+  }
+}

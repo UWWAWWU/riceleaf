@@ -1,36 +1,43 @@
-# RiceLeaf AI
+# RiceLeaf AI — Streamlit
 
-Web klasifikasi penyakit daun padi untuk kelas **Blast**, **Blight**, dan
-**Tungro**. Model Random Forest menggunakan 42 fitur yang mencakup histogram
-HSV, bentuk daun, area penyakit, tekstur, dan Canny edge.
+Web identifikasi dan visualisasi empat penyakit tanaman padi:
 
-## Menjalankan secara lokal
+- Bacterial Blight
+- Blast
+- Brown Spot
+- Tungro
 
-Gunakan Python 3.11 atau 3.12.
+## 1. Masukkan model
 
-```bash
-python -m venv .venv
+Unduh file berikut dari Google Drive:
+
+`/content/drive/MyDrive/RiceLeaf/runs/experiment_v1/riceleaf_bundle.zip`
+
+Ekstrak arsip tersebut, lalu salin tiga file berikut ke folder `model/`:
+
+```text
+model/
+├── classifier.pt
+├── segmenter.pt
+└── metadata.json
 ```
 
-Aktifkan virtual environment, kemudian jalankan:
+## 2. Jalankan secara lokal
 
 ```bash
-python -m pip install -r requirements.txt
+pip install -r requirements.txt
 streamlit run app.py
 ```
 
-## Struktur file
+## 3. Deploy melalui Streamlit Community Cloud
 
-- `app.py`: aplikasi dan preprocessing citra.
-- `riceleaf.joblib`: model Random Forest beserta metadata.
-- `requirements.txt`: versi dependensi yang sesuai dengan model.
-- `.streamlit/config.toml`: konfigurasi tampilan dan server.
+1. Unggah seluruh isi folder ini ke repository GitHub.
+2. Pastikan tiga file model terlihat di folder `model/`.
+3. Buka Streamlit Community Cloud dan pilih **Deploy a public app from GitHub**.
+4. Isi repository dan branch `main`.
+5. Isi **Main file path** dengan `app.py`.
+6. Tekan **Deploy**.
 
-## Publikasi
+## Batasan penting
 
-Paket ini dapat dipublikasikan melalui Streamlit Community Cloud. Simpan
-seluruh isi folder dalam satu repository GitHub, pilih `app.py` sebagai main
-file, lalu deploy.
-
-> Hasil aplikasi merupakan prediksi model dan bukan pengganti pemeriksaan ahli
-> pertanian.
+Model saat ini belum memiliki kelas daun padi normal dan belum mempunyai detektor input bukan padi. Gambar seperti itu dapat tetap dipaksa masuk ke salah satu dari empat penyakit. Web menampilkan peringatan ini kepada pengguna.
